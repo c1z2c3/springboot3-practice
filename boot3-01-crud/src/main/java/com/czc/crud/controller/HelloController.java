@@ -4,7 +4,8 @@ import com.czc.crud.common.Result;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
+import com.czc.crud.dto.CourseCreateDTO;
+import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/hello")
 public class HelloController {
@@ -21,6 +22,11 @@ public class HelloController {
 
     @PostMapping
     public Result<String> body(@RequestBody Map<String, String> body) {
+
         return Result.ok("body: " + body.get("name"));
+    }
+    @PostMapping("/validate")
+    public Result<String> validate(@Valid @RequestBody CourseCreateDTO dto) {
+        return Result.ok(dto.getTitle());
     }
 }
