@@ -1,5 +1,6 @@
 package com.czc.crud.controller;
 
+import com.czc.crud.common.PageResult;
 import com.czc.crud.common.Result;
 import com.czc.crud.dto.CourseCreateDTO;
 import com.czc.crud.entity.Course;
@@ -37,5 +38,18 @@ public class CourseController {
         courseService.delete(id);
         return Result.ok(null);
     }
+
+    @GetMapping
+    public Result<PageResult<Course>> page(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "created_at") String sortBy,
+            @RequestParam(defaultValue = "desc") String dir) {
+        return Result.ok(courseService.page(page, size, status, keyword, sortBy, dir));
+    }
+
+
 
 }
