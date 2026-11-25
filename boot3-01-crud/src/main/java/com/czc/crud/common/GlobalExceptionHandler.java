@@ -3,7 +3,10 @@ package com.czc.crud.common;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,9 +28,18 @@ public class GlobalExceptionHandler {
     public Result<Void> handleBiz(BusinessException e) {
         return Result.fail(e.getErrorCode());
     }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public Result<Void> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        log.warn("参数类型转换失败: {}={}", e.getName(), e.getValue());
+        return Result.fail(ErrorCode.PARAM_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public Result<Void> handleAll(Exception e) {
         log.error("未捕获异常", e);
         return Result.fail(ErrorCode.SYSTEM_ERROR);
     }
+
+
+
 }

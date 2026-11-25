@@ -5,6 +5,7 @@ import com.czc.crud.common.Result;
 import com.czc.crud.dto.CourseCreateDTO;
 import com.czc.crud.entity.Course;
 import com.czc.crud.service.CourseService;
+import com.czc.crud.vo.CourseDetailVO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,19 @@ public class CourseController {
             @RequestParam(defaultValue = "created_at") String sortBy,
             @RequestParam(defaultValue = "desc") String dir) {
         return Result.ok(courseService.page(page, size, status, keyword, sortBy, dir));
+    }
+
+    @GetMapping("/{id}/detail")
+    public Result<CourseDetailVO> detailVo(@PathVariable Long id) {
+
+        return Result.ok(courseService.detailVo(id));
+    }
+
+
+
+    @GetMapping("/{id}/detail-join")
+    public Result<CourseDetailVO> detailVoByJoin(@PathVariable Long id) {
+        return Result.ok(courseService.detailVoByJoin(id));
     }
 
 

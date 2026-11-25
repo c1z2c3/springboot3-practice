@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.czc.crud.mapper.CourseMapper">
+
+    <resultMap id="CourseDetailMap" type="com.czc.crud.vo.CourseDetailVO">
+        <id property="id" column="course_id"/>
+        <result property="title" column="title"/>
+        <result property="price" column="price"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="categoryName" column="category_name"/>
+
+        <collection property="lessons" ofType="com.czc.crud.vo.LessonVO">
+            <id property="id" column="lesson_id"/>
+            <result property="title" column="lesson_title"/>
+            <result property="sort" column="lesson_sort"/>
+            <result property="durationSec" column="lesson_duration_sec"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectDetailById" resultMap="CourseDetailMap">
+        SELECT
+            c.id           AS course_id,
+            c.title        AS title,
+            c.price        AS price,
+            c.status       AS status,
+            c.created_at   AS created_at,
+            COALESCE(cat.name, '未分类') AS category_name,
+            l.id           AS lesson_id,
+            l.title        AS lesson_title,
+            l.sort         AS lesson_sort,
+            l.duration_sec AS lesson_duration_sec
+        FROM t_course c
+                 LEFT JOIN t_category cat
+                           ON cat.id = c.category_id AND cat.deleted = 0
+                 LEFT JOIN t_lesson l
+                           ON l.course_id = c.id AND l.deleted = 0
+        WHERE c.id = #{id} AND c.deleted = 0
+        ORDER BY l.sort ASC
+    </select>
+
+</mapper>

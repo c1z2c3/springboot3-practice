@@ -6,17 +6,28 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.czc.crud.common.BusinessException;
 import com.czc.crud.common.PageResult;
 import com.czc.crud.dto.CourseCreateDTO;
+import com.czc.crud.entity.Category;
 import com.czc.crud.entity.Course;
+import com.czc.crud.entity.Lesson;
+import com.czc.crud.mapper.CategoryMapper;
 import com.czc.crud.mapper.CourseMapper;
 import com.czc.crud.common.ErrorCode;
+import com.czc.crud.mapper.LessonMapper;
+import com.czc.crud.vo.CourseDetailVO;
+import com.czc.crud.vo.LessonVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CourseService {
 
     private final CourseMapper courseMapper;
+    private final CategoryMapper categoryMapper;
+    private final LessonMapper lessonMapper;
 
     public Long create(CourseCreateDTO dto) {
         Course c = new Course();
@@ -68,5 +79,35 @@ public class CourseService {
         }
         Page<Course> p = courseMapper.selectPage(new Page<>(safePage, safeSize), w);
         return PageResult.of(p);
+    }
+
+    public CourseDetailVO detailVo(Long id) {
+        Course c = detail(id);
+
+        Category category = categoryMapper.selectById(c.getCategoryId());
+
+        List<Lesson> lessons = lessonMapper.selectList(
+                new LambdaQueryWrapper<Lesson>()
+                        .eq(Lesson::getCourseId, id)
+                        .orderByAsc(Lesson::getSort));
+
+        CourseDetailVO vo = new CourseDetailVO();
+        vo.setId(id);
+        vo.setTitle(c.getTitle());
+        vo.setPrice(c.getPrice());
+        vo.setStatus(c.getStatus());
+        vo.setCreatedAt(c.getCreatedAt());
+        vo.setCategoryName(category == null?"未分类":category.getName());
+        vo.setLessons(lessons.stream().map(LessonVO::from).toList());
+
+        return vo;
+    }
+
+    public CourseDetailVO detailVoByJoin(Long id) {
+        CourseDetailVO vo = courseMapper.selectDetailById(id);
+        if (vo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND);
+        }
+        return vo;
     }
 }

@@ -3,14 +3,12 @@ package com.czc.crud.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 import java.time.LocalDateTime;
 
 
 @Data
-@TableName("t_lession")
-public class Lession {
+@TableName("t_lesson")
+public class Lesson {
 
     @TableId(type = IdType.AUTO)
     private Long id;
